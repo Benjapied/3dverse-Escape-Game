@@ -14,11 +14,11 @@ import {
       userToken: publicToken,
       sceneUUID: mainSceneUUID,
       canvas: document.getElementById("display-canvas"),
-      createDefaultCamera: true,
+      createDefaultCamera: false,
       startSimulation: "on-assets-loaded",
     });
 
-    //await InitFirstPersonController(characterControllerSceneUUID);
+    await InitFirstPersonController(characterControllerSceneUUID);
   }
   
   //------------------------------------------------------------------------------
@@ -49,6 +49,7 @@ import {
     // The character controller scene is setup as having a single entity at its
     // root which is the first person controller itself.
     const firstPersonController = (await playerSceneEntity.getChildren())[0];
+    console.log(firstPersonController);
     // Look for the first person camera in the children of the controller.
     const children = await firstPersonController.getChildren();
     const firstPersonCamera = children.find((child) =>
