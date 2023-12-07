@@ -14,11 +14,9 @@ import {
       userToken: publicToken,
       sceneUUID: mainSceneUUID,
       canvas: document.getElementById("display-canvas"),
-      createDefaultCamera: false,
+      createDefaultCamera: true,
       startSimulation: "on-assets-loaded",
     });
-  
-    setMainCamera("75a46ad9-45eb-489c-a003-261572fb2e36");
 
     //await InitFirstPersonController(characterControllerSceneUUID);
   }
