@@ -3,6 +3,7 @@ import {
   publicToken,
   mainSceneUUID,
   characterControllerSceneUUID,
+  switch1,
 } from "./config.js";
 
 //------------------------------------------------------------------------------
@@ -19,6 +20,18 @@ async function InitApp() {
   });
 
   await InitFirstPersonController(characterControllerSceneUUID);
+
+  requestAnimationFrame(gameLoop);
+
+  const player = await SDK3DVerse.engineAPI.findEntitiesByNames('Player');
+  const entity = await SDK3DVerse.engineAPI.findEntitiesByEUID(switch1);
+
+  const player1 = player[0];
+  const entity1 = entity[0];
+
+  window.addEventListener('keydown',inputManager);
+  window.addEventListener('keyup',resetKey);
+
 }
 
 //------------------------------------------------------------------------------
@@ -62,4 +75,41 @@ async function InitFirstPersonController(charCtlSceneUUID) {
 
   // Finally set the first person camera as the main camera.
   SDK3DVerse.setMainCamera(firstPersonCamera);
+
+}
+
+let running = true;
+let lastFrameTime = 0;
+let timer = 0;
+
+function gameLoop(currentTime) {
+  const dT = (currentTime - lastFrameTime) / 1000;
+  lastFrameTime = currentTime;
+
+  UpdateTime(dT);
+
+  if(running) {
+    requestAnimationFrame(gameLoop)
+  }
+}
+
+function UpdateTime(dT) {
+  timer += dT;
+}
+
+let keyIsDown  = false;
+
+function resetKey(event){
+  keyIsDown = false;
+}
+
+function inputManager(event) {
+  if(keyIsDown){return;};
+  if(event.key == 'a'){
+    SDK3DVerse.engineAPI.onEnterTrigger((player1, entity1) =>
+    {
+        console.log('oue ',event.key);
+        keyIsDown = true;
+    });
+  };
 }
