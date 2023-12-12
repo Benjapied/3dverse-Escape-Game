@@ -6,10 +6,17 @@ import {
   switch1,
 } from "./config.js";
 
+import {
+  Entity,
+} from "./class.js";
+
 //------------------------------------------------------------------------------
 window.addEventListener("load", InitApp);
 
 //------------------------------------------------------------------------------
+
+const tabEntity = Array();
+
 async function InitApp() {
   await SDK3DVerse.joinOrStartSession({
     userToken: publicToken,
@@ -28,6 +35,9 @@ async function InitApp() {
 
   const player1 = player[0];
   const entity1 = entity[0];
+  tabEntity.push(new Entity(entity[0],printOue));
+
+  SetCollidersEntities();
 
   window.addEventListener('keydown',inputManager);
   window.addEventListener('keyup',resetKey);
@@ -97,19 +107,51 @@ function UpdateTime(dT) {
   timer += dT;
 }
 
+//--------------------Fonctions----------------------
+
 let keyIsDown  = false;
 
-function resetKey(event){
+function resetKey(){
   keyIsDown = false;
 }
 
 function inputManager(event) {
   if(keyIsDown){return;};
   if(event.key == 'a'){
-    SDK3DVerse.engineAPI.onEnterTrigger((player1, entity1) =>
-    {
-        console.log('oue ',event.key);
-        keyIsDown = true;
-    });
+    for(let i = 0; i < tabEntity.length; i++){
+      if(tabEntity[i].isTrigger == true){
+        tabEntity[i].triggerFunction();
+      }
+    }
+    keyIsDown = true;
   };
+}
+
+function SetCollidersEntities(){
+  SDK3DVerse.engineAPI.onEnterTrigger((player1, entity1) =>
+    {
+      tabEntity[0].isTrigger = true;
+    });
+  SDK3DVerse.engineAPI.onExitTrigger((player1, entity1) =>
+    {
+      tabEntity[0].isTrigger = false;
+    });
+
+//   for(let i = 0; i < tabEntity.length(); i++){
+//     SDK3DVerse.engineAPI.onEnterTrigger((player1, tabEntity[i].entity) =>
+//     {
+//       tabEntity[i].isTrigger = true;
+//     });
+//     SDK3DVerse.engineAPI.onEnterTrigger((player1, tabEntity[i].entity) =>
+//     {
+//       tabEntity[i].isTrigger = false;
+//     });
+//   }
+}
+
+
+//------------------Fonctions des entities interractifs----------------
+
+function printOue(){
+  console.log("oue")
 }
