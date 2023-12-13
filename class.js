@@ -1,10 +1,11 @@
 
 export class Entity {
 
-    constructor(entité, func) {
+    constructor(entité, func, param = null) {
         this.entity = entité;
         this.isTrigger = false;
         this.func = func;
+        this.param = param;
     }
 
     getEntity() {return this.entity;}
@@ -13,7 +14,7 @@ export class Entity {
 
     getFunction() {return this.func;}
 
-    triggerFunction() {this.isTrigger = false; return this.func(); }
+    triggerFunction() {return this.func(this.param); }
 
    
 }

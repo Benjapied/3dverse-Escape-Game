@@ -40,10 +40,12 @@ async function InitApp() {
   const Cdoor = door[0];
 
   tabEntity.set(switch1, new Entity(Centity,printOue));
-  tabEntity.set(door1, new Entity(Cdoor,printPapagnan));
+  tabEntity.set(door1, new Entity(Cdoor,openDoor,Cdoor));
 
   
   SetCollideEntities();
+
+  Cdoor.setGlobalTransform({ orientation : [0, 0, 0, 1] });
 
   window.addEventListener('keydown',inputManager);
   window.addEventListener('keyup',resetKey);
@@ -154,6 +156,21 @@ function printOue(){
   console.log("oue")
 }
 
-function printPapagnan(){
-  console.log("papagnan");
+async function openDoor(entity){
+  const child = (await entity.getChildren())[0];
+
+  console.log(child.components.local_transform);
+
+  const transform = child.getGlobalTransform();
+  
+  if(transform.orientation[1] == 0){
+    transform.orientation[1] = 90;
+    child.setGlobalTransform(transform);
+  } else {
+    transform.orientation[1] = 0;
+    child.setGlobalTransform(transform);
+  }
+
+  console.log(child.components.local_transform);
+  
 }
