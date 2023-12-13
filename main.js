@@ -4,6 +4,7 @@ import {
   mainSceneUUID,
   characterControllerSceneUUID,
   switch1,
+  door1,
 } from "./config.js";
 
 import {
@@ -15,7 +16,7 @@ window.addEventListener("load", InitApp);
 
 //------------------------------------------------------------------------------
 
-const tabEntity = Array();
+const tabEntity = new Map();
 
 async function InitApp() {
   await SDK3DVerse.joinOrStartSession({
@@ -32,12 +33,17 @@ async function InitApp() {
 
   const player = await SDK3DVerse.engineAPI.findEntitiesByNames('Player');
   const entity = await SDK3DVerse.engineAPI.findEntitiesByEUID(switch1);
+  const door = await SDK3DVerse.engineAPI.findEntitiesByEUID(door1);
 
-  const player1 = player[0];
-  const entity1 = entity[0];
-  tabEntity.push(new Entity(entity[0],printOue));
+  const Cplayer = player[0];
+  const Centity = entity[0];
+  const Cdoor = door[0];
 
-  SetCollidersEntities();
+  tabEntity.set(switch1, new Entity(Centity,printOue));
+  tabEntity.set(door1, new Entity(Cdoor,printPapagnan));
+
+  
+  SetCollideEntities();
 
   window.addEventListener('keydown',inputManager);
   window.addEventListener('keyup',resetKey);
@@ -86,6 +92,8 @@ async function InitFirstPersonController(charCtlSceneUUID) {
   // Finally set the first person camera as the main camera.
   SDK3DVerse.setMainCamera(firstPersonCamera);
 
+  
+
 }
 
 let running = true;
@@ -118,40 +126,34 @@ function resetKey(){
 function inputManager(event) {
   if(keyIsDown){return;};
   if(event.key == 'a'){
-    for(let i = 0; i < tabEntity.length; i++){
-      if(tabEntity[i].isTrigger == true){
-        tabEntity[i].triggerFunction();
+    tabEntity.forEach(function(valeur) {
+      if(valeur.isTrigger == true){
+        valeur.triggerFunction();
       }
-    }
+    });
     keyIsDown = true;
   };
 }
 
-function SetCollidersEntities(){
-  SDK3DVerse.engineAPI.onEnterTrigger((player1, entity1) =>
-    {
-      tabEntity[0].isTrigger = true;
-    });
-  SDK3DVerse.engineAPI.onExitTrigger((player1, entity1) =>
-    {
-      tabEntity[0].isTrigger = false;
-    });
 
-//   for(let i = 0; i < tabEntity.length(); i++){
-//     SDK3DVerse.engineAPI.onEnterTrigger((player1, tabEntity[i].entity) =>
-//     {
-//       tabEntity[i].isTrigger = true;
-//     });
-//     SDK3DVerse.engineAPI.onEnterTrigger((player1, tabEntity[i].entity) =>
-//     {
-//       tabEntity[i].isTrigger = false;
-//     });
-//   }
+
+function SetCollideEntities(){
+  SDK3DVerse.engineAPI.onEnterTrigger((emitterEntity, triggerEntity) =>
+    {
+      tabEntity.get(String(triggerEntity.linker.components.euid.value)).isTrigger = true;
+    });
+  SDK3DVerse.engineAPI.onExitTrigger((emitterEntity, triggerEntity) =>
+    {
+      tabEntity.get(String(triggerEntity.linker.components.euid.value)).isTrigger = false;
+    });
 }
-
 
 //------------------Fonctions des entities interractifs----------------
 
 function printOue(){
   console.log("oue")
+}
+
+function printPapagnan(){
+  console.log("papagnan");
 }
