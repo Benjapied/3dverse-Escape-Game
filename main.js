@@ -166,11 +166,16 @@ async function openDoor(entity){
   if(transform.orientation[1] == 0){
     transform.orientation[1] = 90;
     child.setGlobalTransform(transform);
+
+    //child.components.local_transform.orientation = [0,90,0] ;
   } else {
     transform.orientation[1] = 0;
     child.setGlobalTransform(transform);
+
+    //child.components.local_transform.orientation = [0,0,0] ;
   }
 
   console.log(child.components.local_transform);
+  console.log(transform);
   
 }
