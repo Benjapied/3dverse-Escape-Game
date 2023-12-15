@@ -5,6 +5,8 @@ import {
   characterControllerSceneUUID,
   switch1,
   door1,
+  doubleDoor,
+  doubleDoor2,
 } from "./config.js";
 
 import {
@@ -31,24 +33,27 @@ async function InitApp() {
 
   requestAnimationFrame(gameLoop);
 
-  const player = await SDK3DVerse.engineAPI.findEntitiesByNames('Player');
-  const entity = await SDK3DVerse.engineAPI.findEntitiesByEUID(switch1);
-  const door = await SDK3DVerse.engineAPI.findEntitiesByEUID(door1);
+  const player = (await SDK3DVerse.engineAPI.findEntitiesByNames('Player'))[0];
+  const entity = (await SDK3DVerse.engineAPI.findEntitiesByEUID(switch1))[0];
+  const door = (await SDK3DVerse.engineAPI.findEntitiesByEUID(door1))[0];
+  const doubleDoorHall = (await SDK3DVerse.engineAPI.findEntitiesByEUID(doubleDoor))[0];
+  const doubleDoorHall2 = (await SDK3DVerse.engineAPI.findEntitiesByEUID(doubleDoor2))[0];
 
-  const Cplayer = player[0];
-  const Centity = entity[0];
-  const Cdoor = door[0];
-
-  tabEntity.set(switch1, new Entity(Centity,printOue));
-  tabEntity.set(door1, new Entity(Cdoor,openDoor,Cdoor));
+  tabEntity.set(switch1, new Entity(entity,printOue));
+  tabEntity.set(door1, new Entity(door,openDoor,'self'));
+  tabEntity.set(doubleDoor, new Entity(doubleDoorHall,openDoubleDoor,'self'));
+  tabEntity.set(doubleDoor2, new Entity(doubleDoorHall2,openDoubleDoor,'self'));
 
   
   SetCollideEntities();
 
-  Cdoor.setGlobalTransform({ orientation : [0, 0, 0, 1] });
 
   window.addEventListener('keydown',inputManager);
   window.addEventListener('keyup',resetKey);
+
+//   document.addEventListener('mousedown', (event) => {
+//     setFPSCameraController(document.getElementById("display-canvas"));
+// });
 
 }
 
@@ -117,6 +122,24 @@ function UpdateTime(dT) {
   timer += dT;
 }
 
+async function setFPSCameraController(canvas){
+  // Remove the required click for the LOOK_LEFT, LOOK_RIGHT, LOOK_UP, and
+  // LOOK_DOWN actions.
+  SDK3DVerse.actionMap.values["LOOK_LEFT"][0] = ["MOUSE_AXIS_X_POS"];
+  SDK3DVerse.actionMap.values["LOOK_RIGHT"][0] = ["MOUSE_AXIS_X_NEG"];
+  SDK3DVerse.actionMap.values["LOOK_DOWN"][0] = ["MOUSE_AXIS_Y_NEG"];
+  SDK3DVerse.actionMap.values["LOOK_UP"][0] = ["MOUSE_AXIS_Y_POS"];
+  SDK3DVerse.actionMap.propagate();
+
+  // Lock the mouse pointer.
+  canvas.requestPointerLock = (
+    canvas.requestPointerLock
+    || canvas.mozRequestPointerLock
+    || canvas.webkitPointerLockElement
+  );
+  canvas.requestPointerLock();
+};
+
 //--------------------Fonctions----------------------
 
 let keyIsDown  = false;
@@ -142,40 +165,96 @@ function inputManager(event) {
 function SetCollideEntities(){
   SDK3DVerse.engineAPI.onEnterTrigger((emitterEntity, triggerEntity) =>
     {
-      tabEntity.get(String(triggerEntity.linker.components.euid.value)).isTrigger = true;
+      if(tabEntity.get(String(triggerEntity.linker.components.euid.value)) !== undefined){
+        tabEntity.get(String(triggerEntity.linker.components.euid.value)).isTrigger = true;
+      }
     });
   SDK3DVerse.engineAPI.onExitTrigger((emitterEntity, triggerEntity) =>
     {
-      tabEntity.get(String(triggerEntity.linker.components.euid.value)).isTrigger = false;
+      if(tabEntity.get(String(triggerEntity.linker.components.euid.value)) !== undefined){
+        tabEntity.get(String(triggerEntity.linker.components.euid.value)).isTrigger = false;
+      }
     });
 }
 
 //------------------Fonctions des entities interractifs----------------
 
+function degToRad(angle) {
+  return angle*Math.PI/180;
+}
+
 function printOue(){
   console.log("oue")
 }
 
-async function openDoor(entity){
-  const child = (await entity.getChildren())[0];
+async function openDoor(param){
 
-  console.log(child.components.local_transform);
+  const entity = param.entity;
+  const initialPos1 = param.initialTransformChildren[1];
+
+  const enfants = await entity.getChildren();
+
+  //On recupere l'element enfant correspondant a la porte
+  const child = enfants.find((child) =>
+    child.isAttached("mesh_ref")
+  );
+
+
+  const transform1 = child.getGlobalTransform();
+
+  let radTransform1;
 
   const transform = child.getGlobalTransform();
   
-  if(transform.orientation[1] == 0){
-    transform.orientation[1] = 90;
-    child.setGlobalTransform(transform);
-
-    //child.components.local_transform.orientation = [0,90,0] ;
+  if(transform1.orientation[1] == initialPos1.orientation[1] && transform1.orientation[3] == initialPos1.orientation[3]){
+    radTransform1 = degToRad(transform1.eulerOrientation[1] + 90);
+    
   } else {
-    transform.orientation[1] = 0;
-    child.setGlobalTransform(transform);
+    radTransform1 = degToRad(transform1.eulerOrientation[1] + 90);
+  }
+  
+  transform.orientation = [0,Math.sin((radTransform1/2)),0,Math.cos((radTransform1/2))];
+  child.setGlobalTransform(transform);
 
-    //child.components.local_transform.orientation = [0,0,0] ;
+}
+
+async function openDoubleDoor(param){
+
+  const entity = param.entity;
+  const initialPos1 = param.initialTransformChildren[2];
+  const initialPos2 = param.initialTransformChildren[1];
+  
+  //On recupere l'element enfant correspondant a la porte
+  const portes = await entity.getChildren();
+  const porte1 = portes.find((child) =>
+    child.isAttached("mesh_ref")
+  );
+
+  const porte2 = portes.find((child) =>
+    child.isAttached("tags")
+  );
+
+  const transform1 = porte1.getGlobalTransform();
+  const transform2 = porte2.getGlobalTransform();
+
+  //Les deux radiant vont rotate les portes
+  let radTransform1; 
+  let radTransform2; 
+  
+  if(transform1.orientation[1] == initialPos1.orientation[1] && transform1.orientation[3] == initialPos1.orientation[3]
+    && transform2.orientation[1] == initialPos2.orientation[1] && transform2.orientation[3] == initialPos2.orientation[3]){
+    radTransform1 = degToRad(transform1.eulerOrientation[1] + 90);
+    radTransform2 = degToRad(transform2.eulerOrientation[1] - 90);
+    
+  } else {
+    radTransform1 = degToRad(initialPos1.eulerOrientation[1]);
+    radTransform2 = degToRad(initialPos2.eulerOrientation[1]);
   }
 
-  console.log(child.components.local_transform);
-  console.log(transform);
+  transform1.orientation = [0,Math.sin((radTransform1/2)),0,Math.cos((radTransform1/2))];
+  porte1.setGlobalTransform(transform1);
+
+  transform2.orientation = [0,Math.sin((radTransform2/2)),0,Math.cos((radTransform2/2))];
+  porte2.setGlobalTransform(transform2);
   
 }
