@@ -5,14 +5,15 @@ import {
   characterControllerSceneUUID,
   switch1,
   door1,
-  doubleDoor,
-  doubleDoor2,
+  CdoubleDoorElevator,
+  CdoubleDoorHall,
   keypadShaker,
   keypadShakerGame,
 } from "./config.js";
 
 import {
   Entity,
+  Player,
 } from "./class.js";
 
 //------------------------------------------------------------------------------
@@ -21,6 +22,7 @@ window.addEventListener("load", InitApp);
 //------------------------------------------------------------------------------
 
 const tabEntity = new Map();
+let player;
 
 async function InitApp() {
   await SDK3DVerse.joinOrStartSession({
@@ -35,18 +37,18 @@ async function InitApp() {
 
   requestAnimationFrame(gameLoop);
 
-  const player = (await SDK3DVerse.engineAPI.findEntitiesByNames('Player'))[0];
+  player = new Player((await SDK3DVerse.engineAPI.findEntitiesByNames('Player'))[0]);
   const entity = (await SDK3DVerse.engineAPI.findEntitiesByEUID(switch1))[0];
   const door = (await SDK3DVerse.engineAPI.findEntitiesByEUID(door1))[0];
-  const doubleDoorHall = (await SDK3DVerse.engineAPI.findEntitiesByEUID(doubleDoor))[0];
-  const doubleDoorHall2 = (await SDK3DVerse.engineAPI.findEntitiesByEUID(doubleDoor2))[0];
+  const doubleDoorElevator = (await SDK3DVerse.engineAPI.findEntitiesByEUID(CdoubleDoorElevator))[0];
+  const doubleDoorHall = (await SDK3DVerse.engineAPI.findEntitiesByEUID(CdoubleDoorHall))[0];
   const keypadShakerHall = (await SDK3DVerse.engineAPI.findEntitiesByEUID(keypadShaker))[0];
   const keypadShaker_Game = (await SDK3DVerse.engineAPI.findEntitiesByEUID(keypadShakerGame))[0];
 
   tabEntity.set(switch1, new Entity(entity,printOue));
   tabEntity.set(door1, new Entity(door,openDoor,'self'));
-  tabEntity.set(doubleDoor, new Entity(doubleDoorHall,openDoubleDoor,'self'));
-  tabEntity.set(doubleDoor2, new Entity(doubleDoorHall2,openDoubleDoor,'self'));
+  tabEntity.set(CdoubleDoorElevator, new Entity(doubleDoorElevator,openDoubleDoor,'self',isElevator));
+  tabEntity.set(CdoubleDoorHall, new Entity(doubleDoorHall,openDoubleDoor,'self',isElevator));
   tabEntity.set(keypadShakerGame,new Entity(keypadShaker_Game,closeKeypadShaker,player));
   tabEntity.set(keypadShaker,new Entity(keypadShakerHall,openKeypadShaker,keypadShaker_Game));
 
@@ -105,9 +107,6 @@ async function InitFirstPersonController(charCtlSceneUUID) {
 
   // Finally set the first person camera as the main camera.
   SDK3DVerse.setMainCamera(firstPersonCamera);
-
-  
-
 }
 
 let running = true;
@@ -279,4 +278,18 @@ async function openKeypadShaker(entity){
 async function closeKeypadShaker(entity){
   SDK3DVerse.setMainCamera(firstPersonCamera);
   SDK3DVerse.engineAPI.assignClientToScripts(firstPersonController);
+}
+
+//------------------Fonction conditionnelles--------------
+
+function isElevator(){
+  return player.save['elevator'];
+}
+
+function isShaker(){
+  return player.save['shaker'];
+}
+
+function isRemoro(){
+  return player.save['romero'];
 }
