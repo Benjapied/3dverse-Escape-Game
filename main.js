@@ -7,6 +7,8 @@ import {
   door1,
   doubleDoor,
   doubleDoor2,
+  keypadShaker,
+  keypadShakerGame,
 } from "./config.js";
 
 import {
@@ -38,11 +40,16 @@ async function InitApp() {
   const door = (await SDK3DVerse.engineAPI.findEntitiesByEUID(door1))[0];
   const doubleDoorHall = (await SDK3DVerse.engineAPI.findEntitiesByEUID(doubleDoor))[0];
   const doubleDoorHall2 = (await SDK3DVerse.engineAPI.findEntitiesByEUID(doubleDoor2))[0];
+  const keypadShakerHall = (await SDK3DVerse.engineAPI.findEntitiesByEUID(keypadShaker))[0];
+  const keypadShaker_Game = (await SDK3DVerse.engineAPI.findEntitiesByEUID(keypadShakerGame))[0];
 
   tabEntity.set(switch1, new Entity(entity,printOue));
   tabEntity.set(door1, new Entity(door,openDoor,'self'));
   tabEntity.set(doubleDoor, new Entity(doubleDoorHall,openDoubleDoor,'self'));
   tabEntity.set(doubleDoor2, new Entity(doubleDoorHall2,openDoubleDoor,'self'));
+  tabEntity.set(keypadShakerGame,new Entity(keypadShaker_Game,closeKeypadShaker,player));
+  tabEntity.set(keypadShaker,new Entity(keypadShakerHall,openKeypadShaker,keypadShaker_Game));
+
 
   
   SetCollideEntities();
@@ -257,4 +264,19 @@ async function openDoubleDoor(param){
   transform2.orientation = [0,Math.sin((radTransform2/2)),0,Math.cos((radTransform2/2))];
   porte2.setGlobalTransform(transform2);
   
+}
+
+async function openKeypadShaker(entity){
+  const children  = await entity.getChildren();
+  const gameCam = children.find((child) =>
+    child.isAttached("Camera")
+  );
+
+  SDK3DVerse.setMainCamera(gameCam);
+  SDK3DVerse.engineAPI.detachClientFromScripts(player);
+}
+
+async function closeKeypadShaker(entity){
+  SDK3DVerse.setMainCamera(firstPersonCamera);
+  SDK3DVerse.engineAPI.assignClientToScripts(firstPersonController);
 }
