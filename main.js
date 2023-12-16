@@ -5,12 +5,13 @@ import {
   characterControllerSceneUUID,
   switch1,
   door1,
-  doubleDoor,
-  doubleDoor2,
+  CdoubleDoorElevator,
+  CdoubleDoorHall,
 } from "./config.js";
 
 import {
   Entity,
+  Player,
 } from "./class.js";
 
 //------------------------------------------------------------------------------
@@ -19,6 +20,7 @@ window.addEventListener("load", InitApp);
 //------------------------------------------------------------------------------
 
 const tabEntity = new Map();
+let player;
 
 async function InitApp() {
   await SDK3DVerse.joinOrStartSession({
@@ -33,16 +35,16 @@ async function InitApp() {
 
   requestAnimationFrame(gameLoop);
 
-  const player = (await SDK3DVerse.engineAPI.findEntitiesByNames('Player'))[0];
+  player = new Player((await SDK3DVerse.engineAPI.findEntitiesByNames('Player'))[0]);
   const entity = (await SDK3DVerse.engineAPI.findEntitiesByEUID(switch1))[0];
   const door = (await SDK3DVerse.engineAPI.findEntitiesByEUID(door1))[0];
-  const doubleDoorHall = (await SDK3DVerse.engineAPI.findEntitiesByEUID(doubleDoor))[0];
-  const doubleDoorHall2 = (await SDK3DVerse.engineAPI.findEntitiesByEUID(doubleDoor2))[0];
+  const doubleDoorElevator = (await SDK3DVerse.engineAPI.findEntitiesByEUID(CdoubleDoorElevator))[0];
+  const doubleDoorHall = (await SDK3DVerse.engineAPI.findEntitiesByEUID(CdoubleDoorHall))[0];
 
   tabEntity.set(switch1, new Entity(entity,printOue));
   tabEntity.set(door1, new Entity(door,openDoor,'self'));
-  tabEntity.set(doubleDoor, new Entity(doubleDoorHall,openDoubleDoor,'self'));
-  tabEntity.set(doubleDoor2, new Entity(doubleDoorHall2,openDoubleDoor,'self'));
+  tabEntity.set(CdoubleDoorElevator, new Entity(doubleDoorElevator,openDoubleDoor,'self',isElevator));
+  tabEntity.set(CdoubleDoorHall, new Entity(doubleDoorHall,openDoubleDoor,'self',isElevator));
 
   
   SetCollideEntities();
@@ -98,9 +100,6 @@ async function InitFirstPersonController(charCtlSceneUUID) {
 
   // Finally set the first person camera as the main camera.
   SDK3DVerse.setMainCamera(firstPersonCamera);
-
-  
-
 }
 
 let running = true;
@@ -257,4 +256,18 @@ async function openDoubleDoor(param){
   transform2.orientation = [0,Math.sin((radTransform2/2)),0,Math.cos((radTransform2/2))];
   porte2.setGlobalTransform(transform2);
   
+}
+
+//------------------Fonction conditionnelles--------------
+
+function isElevator(){
+  return player.save['elevator'];
+}
+
+function isShaker(){
+  return player.save['shaker'];
+}
+
+function isRemoro(){
+  return player.save['romero'];
 }
