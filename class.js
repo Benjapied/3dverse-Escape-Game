@@ -103,9 +103,6 @@ export class Door extends Entity{
 
 }
 
-
-
-
 export class Player {
     //La classe contient l'avancée globale du joueur, par exemple si on veut ouvrir une porte d'une salle, 
     //on va regarder ici si le joueur a le droit de l'ouvrir
@@ -133,16 +130,17 @@ export class Player {
 
 }
 
-export class Keypad {
-    constuctor(entity = null, numbers = null , goodCode = null , func = null) {
+export class Keypad extends Entity {
+    constructor(entity, func, numbers, goodCode, goodFunc, param, condition) {
+        super(entity, func, param, condition);
         //Entity contient l'entité
         //Contient le nombre de slot dans le pad
         //La bonne combinsaison
-        this.entity = entity;
+        //La fonction qui est lancée quand le code est bon
         this.code = [];
         this.setCode(numbers);
         this.goodCode = goodCode;
-        this.func = func;
+        this.goodFunc = goodFunc;
     }
 
     setCode(numbers){
@@ -157,7 +155,7 @@ export class Keypad {
 
     verifCode(){
         if(this.code == this.goodCode){
-            this.func();
+            this.goodFunc();
         }
         return false;
     }
