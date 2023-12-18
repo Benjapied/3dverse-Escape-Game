@@ -11,6 +11,14 @@ import {
   keypadShakerGame,
   CkeypadElevator,
   CkeypadElevatorGame,
+  CmapEntree,
+  CmapZoom,
+  Crct1,
+  Crct1Zoom,
+  Crct2,
+  Crct2Zoom,
+  Crct3,
+  Crct3Zoom,
 } from "./config.js";
 
 import {
@@ -46,19 +54,36 @@ async function InitApp() {
   const door = (await SDK3DVerse.engineAPI.findEntitiesByEUID(door1))[0];
   const doubleDoorElevator = (await SDK3DVerse.engineAPI.findEntitiesByEUID(CdoubleDoorElevator))[0];
   const doubleDoorHall = (await SDK3DVerse.engineAPI.findEntitiesByEUID(CdoubleDoorHall))[0];
-  // const keypadShakerHall = (await SDK3DVerse.engineAPI.findEntitiesByEUID(keypadShaker))[0];
-  // const keypadShaker_Game = (await SDK3DVerse.engineAPI.findEntitiesByEUID(keypadShakerGame))[0];
+  const keypadShakerHall = (await SDK3DVerse.engineAPI.findEntitiesByEUID(keypadShaker))[0];
+  const keypadShaker_Game = (await SDK3DVerse.engineAPI.findEntitiesByEUID(keypadShakerGame))[0];
   const keypadElevator = (await SDK3DVerse.engineAPI.findEntitiesByEUID(CkeypadElevator))[0];
   const keypadElevator_Game = (await SDK3DVerse.engineAPI.findEntitiesByEUID(CkeypadElevatorGame))[0];
+  const mapEntree = (await SDK3DVerse.engineAPI.findEntitiesByEUID(CmapEntree))[0];
+  const mapZoom = (await SDK3DVerse.engineAPI.findEntitiesByEUID(CmapZoom))[0];
+  const rct1 = (await SDK3DVerse.engineAPI.findEntitiesByEUID(Crct1))[0];
+  const rct1Zoom = (await SDK3DVerse.engineAPI.findEntitiesByEUID(Crct1Zoom))[0];
+  const rct2 = (await SDK3DVerse.engineAPI.findEntitiesByEUID(Crct2))[0];
+  const rct2Zoom = (await SDK3DVerse.engineAPI.findEntitiesByEUID(Crct2Zoom))[0];
+  const rct3 = (await SDK3DVerse.engineAPI.findEntitiesByEUID(Crct3))[0];
+  const rct3Zoom = (await SDK3DVerse.engineAPI.findEntitiesByEUID(Crct3Zoom))[0];
 
   tabEntity.set(switch1, new Entity(entity,printOue));
   tabEntity.set(door1, new Door(door,openDoor,'self'));
   tabEntity.set(CdoubleDoorElevator, new DoubleDoor(doubleDoorElevator,openDoubleDoor,'self',isElevator));
   tabEntity.set(CdoubleDoorHall, new DoubleDoor(doubleDoorHall,openDoubleDoor,'self',isElevator));
-  // tabEntity.set(keypadShakerGame,new Entity(keypadShaker_Game,closeKeypadShaker,player));
-  // tabEntity.set(keypadShaker,new Entity(keypadShakerHall,openKeypadShaker,keypadShaker_Game));
+  tabEntity.set(keypadShakerGame,new Entity(keypadShaker_Game,closeKeypad,'self'));
+  tabEntity.set(keypadShaker,new Entity(keypadShakerHall,openKeypad,keypadShaker_Game));
   tabEntity.set(CkeypadElevator,new Entity(keypadElevator,openKeypad,keypadElevator_Game));
   tabEntity.set(CkeypadElevatorGame,new Entity(keypadElevator_Game,closeKeypad,'self'));
+  tabEntity.set(CmapEntree,new Entity(mapEntree,openKeypad,mapZoom));
+  tabEntity.set(CmapZoom,new Entity(mapZoom,closeKeypad,'self'));
+
+  tabEntity.set(Crct1,new Entity(rct1,openKeypad,rct1Zoom));
+  tabEntity.set(Crct1Zoom,new Entity(rct1Zoom,closeKeypad,'self'));
+  tabEntity.set(Crct2,new Entity(rct2,openKeypad,rct2Zoom));
+  tabEntity.set(Crct2Zoom,new Entity(rct2Zoom,closeKeypad,'self'));
+  tabEntity.set(Crct3,new Entity(rct3,openKeypad,rct3Zoom));
+  tabEntity.set(Crct3Zoom,new Entity(rct3Zoom,closeKeypad,'self'));
   
   SetCollideEntities();
 
@@ -295,17 +320,7 @@ async function openKeypad(entity){
 
 }
 
-async function closeKeypadShaker(entity){
-  const children  = await entity.getChildren();
-  const playerCam = children.find((child) =>
-    child.isAttached("camera")
-  );
-  const firstPersonController = children.find((child) =>
-  child.isAttached("script")
-  );
-  SDK3DVerse.setMainCamera(playerCam);
-  //SDK3DVerse.engineAPI.detachClientFromScripts(player.entity);
-}
+
 
 async function closeKeypad(entity){
   SDK3DVerse.setMainCamera(firstPersonCamera);
