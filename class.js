@@ -1,4 +1,8 @@
 
+import {
+    degToRad
+  } from "./main.js";
+
 export class Entity {
 
     constructor(entité, func, param = null, condition = true) {
@@ -118,7 +122,7 @@ export class Player {
     setSave(){
         //Va contenir l'avancée globale du joueur dans le jeu
         this.save = {
-        "elevator" : true,
+        "elevator" : false,
         "shaker" : false,
         "carmack" : false
         };
@@ -154,10 +158,12 @@ export class Keypad extends Entity {
     }
 
     verifCode(){
-        if(this.code == this.goodCode){
-            this.goodFunc();
+        for(let i = 0; i < this.code.length;i++){
+            if(this.code[i] != this.goodCode[i]){
+                return false;
+            }
         }
-        return false;
+        this.goodFunc();
     }
 
     async getNumber(index){
@@ -182,6 +188,8 @@ export class Keypad extends Entity {
         transform.orientation = [Math.sin((radTransform/2)),0,0,Math.cos((radTransform/2))];
         wheel.setGlobalTransform(transform);
         
-        console.log(transform.eulerOrientation[0]);
+        this.code[index-1] -= number;
+        if(this.code[index-1] == 10){this.code[index-1] = 0}
+        if(this.code[index-1] == -1){this.code[index-1] = 9}
     }
 }

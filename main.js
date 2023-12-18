@@ -88,7 +88,7 @@ async function InitApp() {
 
   
   tabEntity.set(CkeypadElevator,new Entity(keypadElevator,openKeypad,keypadElevator_Game));
-  tabEntity.set(CkeypadElevatorGame,new Keypad(keypadElevator_Game,setPlayerCamera,3,[2,3,4],() => {player.save["elevator"] = true;},player.entity));
+  tabEntity.set(CkeypadElevatorGame,new Keypad(keypadElevator_Game,setPlayerCamera,3,[2,0,0],() => {player.save["elevator"] = true;},player.entity));
   
   
   SetCollideEntities();
@@ -220,16 +220,15 @@ async function inputManager(event) {
     keyIsDown = true;
   };
   if(event.key == 'l') {
-    await tabEntity.get(CkeypadElevatorGame).entity.rotateNumber(-1,1);
+    await tabEntity.get(CkeypadElevatorGame).rotateNumber(-1,1);
     keyIsDown = true;
   };
   if(event.key == 'k') {
-    console.log(tabEntity.get(CkeypadElevatorGame).entity);
-    //await tabEntity.get(CkeypadElevatorGame).entity.rotateNumber(1,1);
+    await tabEntity.get(CkeypadElevatorGame).rotateNumber(1,1);
     keyIsDown = true;
   };
   if(event.key == 'p') {
-    tabEntity.get(CkeypadElevator).entity.verifCode();
+    tabEntity.get(CkeypadElevatorGame).verifCode();
     keyIsDown = true;
   };
 }
@@ -251,7 +250,7 @@ function SetCollideEntities(){
 
 //------------------Fonctions des entities interractifs----------------
 
-function degToRad(angle) {
+export function degToRad(angle) {
   return angle*Math.PI/180;
 }
 
