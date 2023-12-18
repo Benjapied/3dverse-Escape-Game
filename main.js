@@ -58,7 +58,7 @@ async function InitApp() {
   // tabEntity.set(keypadShakerGame,new Entity(keypadShaker_Game,closeKeypadShaker,player));
   // tabEntity.set(keypadShaker,new Entity(keypadShakerHall,openKeypadShaker,keypadShaker_Game));
   tabEntity.set(CkeypadElevator,new Entity(keypadElevator,openKeypad,keypadElevator_Game));
-  tabEntity.set(CkeypadElevatorGame,new Entity(keypadElevator_Game,closeKeypad,'self'));
+  tabEntity.set(CkeypadElevatorGame,new Entity(keypadElevator_Game,setPlayerCamera,player.entity));
   
   SetCollideEntities();
 
@@ -137,10 +137,15 @@ async function setFPSCameraController(canvas){
   canvas.requestPointerLock();
 };
 
-async function setPlayerCamera(player) {
+async function setPlayerCamera(controller) {
+
+  if(player !== undefined){
+    player.isTrigger = true;
+  }
+  
   // The character controller scene is setup as having a single entity at its
   // root which is the first person controller itself.
-  const firstPersonController = (await player.getChildren())[0];
+  const firstPersonController = (await controller.getChildren())[0];
   // Look for the first person camera in the children of the controller.
   const children = await firstPersonController.getChildren();
   const firstPersonCamera = children.find((child) =>
@@ -154,7 +159,9 @@ async function setPlayerCamera(player) {
 
   // Finally set the first person camera as the main camera.
   SDK3DVerse.setMainCamera(firstPersonCamera);
-}
+
+  
+};
 
 //--------------------Fonctions----------------------
 
@@ -164,9 +171,9 @@ function resetKey(){
   keyIsDown = false;
 }
 
-function inputManager(event) {
+async function inputManager(event) {
   if(keyIsDown){return;};
-  if(event.key == 'a'){
+  if(event.key == 'a' && player.isTrigger == true){
     tabEntity.forEach(function(valeur) {
       if(valeur.isTrigger == true){
         valeur.triggerFunction();
@@ -176,6 +183,14 @@ function inputManager(event) {
   };
   if(event.key == 'Escape'){
     setPlayerCamera(player.entity);
+    keyIsDown = true;
+  };
+  if(event.key == 'l') {
+    await rotateNumber(-1, await getNumber(tabEntity.get(CkeypadElevatorGame),1));
+    keyIsDown = true;
+  };
+  if(event.key == 'k') {
+    await rotateNumber(1, await getNumber(tabEntity.get(CkeypadElevatorGame),1));
     keyIsDown = true;
   };
 }
@@ -288,31 +303,32 @@ async function openKeypad(entity){
   );
 
   SDK3DVerse.setMainCamera(gameCam);
-  console.log(player.entity.getChildren()[0])
-  //SDK3DVerse.engineAPI.detachClientFromScripts(player.entity.entity.getChildren()[0]);
-  console.log('en mode sperme')
-  console.log(player.entity.getChildren()[0])
+
+  player.isTrigger = false;
 
 }
 
-async function closeKeypadShaker(entity){
-  const children  = await entity.getChildren();
-  const playerCam = children.find((child) =>
-    child.isAttached("camera")
+async function getNumber(entité, index){
+
+  const childrenScene  = await entité.entity.getChildren();
+  const roue = childrenScene.find((child) =>
+    child.getComponent('debug_name').value == ('number '+index)
   );
-  const firstPersonController = children.find((child) =>
-  child.isAttached("script")
+  
+  return roue;
+}
+
+async function rotateNumber(number, slot){
+  //Number est entre 1 et -1 pour le sens de rotate
+  const children = await slot.getChildren();
+  const wheel = children.find((child) =>
+    child.getComponent('debug_name').value == 'slot'
   );
-  SDK3DVerse.setMainCamera(playerCam);
-  //SDK3DVerse.engineAPI.detachClientFromScripts(player.entity);
+  const transform = wheel.getGlobalTransform();
+  const radTransform = degToRad(Math.round(transform.eulerOrientation[0]) + (36 * number));
+  transform.orientation = [Math.sin((radTransform/2)),0,0,Math.cos((radTransform/2))];
+  wheel.setGlobalTransform(transform);
 }
-
-async function closeKeypad(entity){
-  SDK3DVerse.setMainCamera(firstPersonCamera);
-  SDK3DVerse.engineAPI.assignClientToScripts(firstPersonController);
-}
-
-
 
 //------------------Fonction conditionnelles--------------
 
@@ -324,6 +340,6 @@ function isShaker(){
   return player.save['shaker'];
 }
 
-function isRemoro(){
+function isRomero(){
   return player.save['romero'];
 }

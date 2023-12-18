@@ -114,6 +114,8 @@ export class Player {
         this.save = new Map();
 
         this.setSave();
+
+        this.isTrigger = true;
     }
 
     setSave(){
