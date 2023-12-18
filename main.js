@@ -268,17 +268,30 @@ async function openDoubleDoor(param){
 async function openKeypadShaker(entity){
   const children  = await entity.getChildren();
   const gameCam = children.find((child) =>
-    child.isAttached("Camera")
+    child.isAttached("camera")
   );
 
   SDK3DVerse.setMainCamera(gameCam);
-  SDK3DVerse.engineAPI.detachClientFromScripts(player);
+  console.log(player.entity.getChildren()[0])
+  SDK3DVerse.engineAPI.detachClientFromScripts(player.entity.getChildren()[0]);
+  console.log('en mode sperme')
+  console.log(player.entity.getChildren()[0])
+
 }
 
 async function closeKeypadShaker(entity){
-  SDK3DVerse.setMainCamera(firstPersonCamera);
+  const children  = await entity.getChildren();
+  const playerCam = children.find((child) =>
+    child.isAttached("camera")
+  );
+  const firstPersonController = children.find((child) =>
+  child.isAttached("script")
+  );
+  SDK3DVerse.setMainCamera(playerCam);
   SDK3DVerse.engineAPI.assignClientToScripts(firstPersonController);
 }
+
+
 
 //------------------Fonction conditionnelles--------------
 

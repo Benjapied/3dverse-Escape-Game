@@ -19,6 +19,31 @@
         oncontextmenu="event.preventDefault()"
       ></canvas>
     </div>
+    <!-- <script>
+      async function onClick(event) {
+        const target = await SDK3DVerse.engineAPI.castScreenSpaceRay(
+          event.clientX,
+          event.clientY
+        );
+        if (!target.pickedPosition) return;
+        const clickedEntity = target.entity;
+        console.log(clickedEntity);
+        const rootEntities = await SDK3DVerse.engineAPI.getRootEntities();
+        const Number1 = rootEntities.find(
+        (e) => e.getName() === 'Number1'
+        );
+        if (clickedEntity.getName() === 'UpArrow'){
+            const children = await Number1.getChildren();
+            const slot = children.find((child) =>
+            child.getComponent('debug_name').value == 'slot'
+            );
+            const transforme1 = slot.getGlobalTransform();
+            let radTransform1 = degToRad(transform1.eulerOrientation[1] + 90);
+            transform1.orientation = [0,Math.sin((radTransform1/2)),0,Math.cos((radTransform1/2))];
+            slot.setGlobalTransform(transform1);
+        }
+      };
+    </script> -->
 
     <!-- Class module -->>
     <script src="./class.js" type="module"></script>
