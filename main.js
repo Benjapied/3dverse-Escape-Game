@@ -251,21 +251,24 @@ async function openDoubleDoor(param){
   let radTransform2; 
 
   
-  if(Math.round(transform1.eulerOrientation[1]) == Math.round(initialPos1.eulerOrientation[1]) 
-    && Math.round(transform2.eulerOrientation[1]) == Math.round(initialPos2.eulerOrientation[1] )){
+  if(Math.round(transform1.orientation[1]) == Math.round(initialPos1.orientation[1]) 
+    && Math.round(transform2.orientation[1]) == Math.round(initialPos2.orientation[1] )){
     radTransform1 = degToRad(transform1.eulerOrientation[1] + 90);
-    radTransform2 = degToRad(transform2.eulerOrientation[1] + 270);
+    radTransform2 = degToRad(transform2.eulerOrientation[1] - 90);
+
+    transform1.orientation = [0,Math.sin((radTransform1/2)),0,Math.cos((radTransform1/2))];
+    porte1.setGlobalTransform(transform1);
+
+    transform2.orientation = [0,Math.sin((radTransform2/2)),0,Math.cos((radTransform2/2))];
+    porte2.setGlobalTransform(transform2);
     
   } else {
-    radTransform1 = degToRad(initialPos1.eulerOrientation[1]);
-    radTransform2 = degToRad(initialPos2.eulerOrientation[1]);
+    // radTransform1 = degToRad(initialPos1.eulerOrientation[1]);
+    // radTransform2 = degToRad(initialPos2.eulerOrientation[1]);
+    porte1.setGlobalTransform(initialPos1);
+    porte2.setGlobalTransform(initialPos2);
   }
 
-  transform1.orientation = [0,Math.sin((radTransform1/2)),0,Math.cos((radTransform1/2))];
-  porte1.setGlobalTransform(transform1);
-
-  transform2.orientation = [0,Math.sin((radTransform2/2)),0,Math.cos((radTransform2/2))];
-  porte2.setGlobalTransform(transform2);
 
 }
 
