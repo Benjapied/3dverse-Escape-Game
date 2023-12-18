@@ -333,6 +333,11 @@ async function openKeypad(entity){
 
 }
 
+async function closeKeypad(entity){
+  SDK3DVerse.setMainCamera(firstPersonCamera);
+  SDK3DVerse.engineAPI.assignClientToScripts(firstPersonController);
+}
+
 async function getNumber(entité, index){
 
   const childrenScene  = await entité.entity.getChildren();
