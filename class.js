@@ -134,11 +134,15 @@ export class Player {
 }
 
 export class Keypad {
-    constuctor(entity, numbers, goodCode) {
+    constuctor(entity = null, numbers = null , goodCode = null , func = null) {
+        //Entity contient l'entité
+        //Contient le nombre de slot dans le pad
+        //La bonne combinsaison
         this.entity = entity;
         this.code = [];
         this.setCode(numbers);
-        this.goodCode;
+        this.goodCode = goodCode;
+        this.func = func;
     }
 
     setCode(numbers){
@@ -153,8 +157,33 @@ export class Keypad {
 
     verifCode(){
         if(this.code == this.goodCode){
-            return true;
+            this.func();
         }
         return false;
+    }
+
+    async getNumber(index){
+    //Savoir quelle roue du code on va tourner
+        const childrenScene  = await this.entity.getChildren();
+        const roue = childrenScene.find((child) =>
+            child.getComponent('debug_name').value == ('number '+index)
+        );
+        
+        return roue;
+    }
+        
+    async rotateNumber(number, index){
+        const slot = await this.getNumber(index);
+        //Number est entre 1 et -1 pour le sens de rotate
+        const children = await slot.getChildren();
+        const wheel = children.find((child) =>
+            child.getComponent('debug_name').value == 'slot'
+        );
+        const transform = wheel.getGlobalTransform();
+        const radTransform = degToRad(Math.round(transform.eulerOrientation[0]) + (36 * number));
+        transform.orientation = [Math.sin((radTransform/2)),0,0,Math.cos((radTransform/2))];
+        wheel.setGlobalTransform(transform);
+        
+        console.log(transform.eulerOrientation[0]);
     }
 }

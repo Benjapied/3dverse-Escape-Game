@@ -26,6 +26,7 @@ import {
   Player,
   DoubleDoor,
   Door,
+  Keypad,
 } from "./class.js";
 
 //------------------------------------------------------------------------------
@@ -71,24 +72,32 @@ async function InitApp() {
   tabEntity.set(door1, new Door(door,openDoor,'self'));
   tabEntity.set(CdoubleDoorElevator, new DoubleDoor(doubleDoorElevator,openDoubleDoor,'self',isElevator));
   tabEntity.set(CdoubleDoorHall, new DoubleDoor(doubleDoorHall,openDoubleDoor,'self',isElevator));
-  tabEntity.set(keypadShakerGame,new Entity(keypadShaker_Game,closeKeypad,'self'));
+  tabEntity.set(keypadShakerGame,new Entity(keypadShaker_Game,setPlayerCamera,'self'));
   tabEntity.set(keypadShaker,new Entity(keypadShakerHall,openKeypad,keypadShaker_Game));
   tabEntity.set(CkeypadElevator,new Entity(keypadElevator,openKeypad,keypadElevator_Game));
   tabEntity.set(CkeypadElevatorGame,new Entity(keypadElevator_Game,setPlayerCamera,player.entity));
   tabEntity.set(CmapEntree,new Entity(mapEntree,openKeypad,mapZoom));
-  tabEntity.set(CmapZoom,new Entity(mapZoom,closeKeypad,'self'));
+  tabEntity.set(CmapZoom,new Entity(mapZoom,setPlayerCamera,player.entity));
 
   tabEntity.set(Crct1,new Entity(rct1,openKeypad,rct1Zoom));
-  tabEntity.set(Crct1Zoom,new Entity(rct1Zoom,closeKeypad,'self'));
+  tabEntity.set(Crct1Zoom,new Entity(rct1Zoom,setPlayerCamera,player.entity));
   tabEntity.set(Crct2,new Entity(rct2,openKeypad,rct2Zoom));
-  tabEntity.set(Crct2Zoom,new Entity(rct2Zoom,closeKeypad,'self'));
+  tabEntity.set(Crct2Zoom,new Entity(rct2Zoom,setPlayerCamera,player.entity));
   tabEntity.set(Crct3,new Entity(rct3,openKeypad,rct3Zoom));
-  tabEntity.set(Crct3Zoom,new Entity(rct3Zoom,closeKeypad,'self'));
+  tabEntity.set(Crct3Zoom,new Entity(rct3Zoom,setPlayerCamera,player.entity));
+
+  
+  tabEntity.set(CkeypadElevator,new Entity(keypadElevator,openKeypad,keypadElevator_Game));
+  tabEntity.set(CkeypadElevatorGame,new Keypad(keypadElevator_Game,setPlayerCamera,3,[2,3,4],() => {player.save["elevator"] = true;},player.entity));
+  
   
   SetCollideEntities();
 
   window.addEventListener('keydown',inputManager);
   window.addEventListener('keyup',resetKey);
+
+  console.log(tabEntity.get(CkeypadElevatorGame));
+
 
 //   document.addEventListener('mousedown', (event) => {
 //     setFPSCameraController(document.getElementById("display-canvas"));
@@ -211,11 +220,16 @@ async function inputManager(event) {
     keyIsDown = true;
   };
   if(event.key == 'l') {
-    await rotateNumber(-1, await getNumber(tabEntity.get(CkeypadElevatorGame),1));
+    await tabEntity.get(CkeypadElevatorGame).entity.rotateNumber(-1,1);
     keyIsDown = true;
   };
   if(event.key == 'k') {
-    await rotateNumber(1, await getNumber(tabEntity.get(CkeypadElevatorGame),1));
+    console.log(tabEntity.get(CkeypadElevatorGame).entity);
+    //await tabEntity.get(CkeypadElevatorGame).entity.rotateNumber(1,1);
+    keyIsDown = true;
+  };
+  if(event.key == 'p') {
+    tabEntity.get(CkeypadElevator).entity.verifCode();
     keyIsDown = true;
   };
 }
@@ -333,32 +347,7 @@ async function openKeypad(entity){
 
 }
 
-async function closeKeypad(entity){
-  SDK3DVerse.setMainCamera(firstPersonCamera);
-  SDK3DVerse.engineAPI.assignClientToScripts(firstPersonController);
-}
 
-async function getNumber(entité, index){
-
-  const childrenScene  = await entité.entity.getChildren();
-  const roue = childrenScene.find((child) =>
-    child.getComponent('debug_name').value == ('number '+index)
-  );
-  
-  return roue;
-}
-
-async function rotateNumber(number, slot){
-  //Number est entre 1 et -1 pour le sens de rotate
-  const children = await slot.getChildren();
-  const wheel = children.find((child) =>
-    child.getComponent('debug_name').value == 'slot'
-  );
-  const transform = wheel.getGlobalTransform();
-  const radTransform = degToRad(Math.round(transform.eulerOrientation[0]) + (36 * number));
-  transform.orientation = [Math.sin((radTransform/2)),0,0,Math.cos((radTransform/2))];
-  wheel.setGlobalTransform(transform);
-}
 
 //------------------Fonction conditionnelles--------------
 
