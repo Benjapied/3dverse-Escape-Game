@@ -9,3 +9,6 @@ export const CdoubleDoorHall = "79e8c9e6-f125-4ff7-b240-0fad10e9fce2";
 
 export const keypadShaker = "7f164c5a-16de-40ed-8080-b996714368be";
 export const keypadShakerGame = "9c05c39b-a099-4b2b-8d76-373ef71db428";
+
+export const CkeypadElevator = "a9153ead-9685-4005-883c-8e840d70194d";
+export const CkeypadElevatorGame = "66fe005f-e428-4a60-ac14-957fbda480d3";
