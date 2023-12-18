@@ -8,14 +8,6 @@ export class Entity {
         this.param = param;
         this.condition = this.setCondition(condition); //Ajoute une condition bool pour lancer la fonction, est true par défaut mais peut etre une fonction tiers
 
-        this.initialTransform = null;
-        this.setInitialTransform();
-
-        this.children = [];
-
-        this.initialTransformChildren = [];
-        this.setInitialTransformChildren();
-
         if(param == "self"){ this.param = this;}//si on met le string 'self' en param, on set le parametre à this
     }
 
@@ -26,23 +18,7 @@ export class Entity {
     getFunction() {return this.func;}
 
     triggerFunction() {if(this.condition()){return this.func(this.param);}else{console.log("vous ne pouvez pas faire ça")} }
-
-    setInitialTransform() { this.initialTransform = this.entity.getGlobalTransform()}
-
-    async setChildren() { this.children = await this.entity.getChildren()}
-
-    async setInitialTransformChildren() {
-        //renvoie la liste des transform des enfants de l'entité
-        //Renvoie dans l'odre inverse à celui de 3dverse (exemple le premier enfant en partant du haut dans 3dverse sera a la fin de la liste)
-        await this.setChildren();
-        if(this.children.length == 0){return;}
-        for(let i = 0; i < this.children.length;i++){
-            if(this.children[i].components.local_transform != undefined){
-                this.initialTransformChildren.push(this.children[i].getGlobalTransform());
-            }
-        }
-    }
-
+    
     setCondition(condition){
         if (condition == true){
             return function(){return true;};
@@ -50,7 +26,85 @@ export class Entity {
             return condition;
         }
     }
+
 }
+
+export class DoubleDoor extends Entity{
+    constructor(entité, func, param, condition){
+        super(entité, func, param, condition);
+
+        this.initialTransform = null;
+        this.setInitialTransform();
+
+        this.children = [];
+
+        this.initialTransformChildren = [];
+        this.setInitialTransformChildren();
+    }
+
+    setInitialTransform() { this.initialTransform = this.entity.getGlobalTransform()}
+
+    async setChildren() { this.children = await this.entity.getChildren()}
+
+    async setInitialTransformChildren() {
+        //renvoie la liste des transform des enfants de l'entité
+        await this.setChildren();
+
+        const porte1 = this.children.find((child) =>
+            child.getComponent('debug_name').value == 'porte1'
+        );
+        if(porte1.components.local_transform !== undefined){
+            this.initialTransformChildren.push(porte1.getGlobalTransform());
+        }
+        const porte2 = this.children.find((child) =>
+            child.getComponent('debug_name').value == 'porte2'
+        );
+
+        const trans = porte2.getGlobalTransform();
+        trans.eulerOrientation[1] = trans.eulerOrientation[1] - this.initialTransformChildren[0].eulerOrientation[2];
+        porte2.setGlobalTransform(trans);
+        
+        if(porte2.components.local_transform !== undefined){
+            this.initialTransformChildren.push(porte2.getGlobalTransform());
+        }
+        
+    }
+
+}
+
+export class Door extends Entity{
+    constructor(entité, func, param, condition){
+        super(entité, func, param, condition);
+
+        this.initialTransform = null;
+        this.setInitialTransform();
+
+        this.children = [];
+
+        this.initialTransformChildren = [];
+        this.setInitialTransformChildren();
+    }
+
+    setInitialTransform() { this.initialTransform = this.entity.getGlobalTransform()}
+
+    async setChildren() { this.children = await this.entity.getChildren()}
+
+    async setInitialTransformChildren() {
+        //renvoie la liste des transform des enfants de l'entité
+        await this.setChildren();
+
+        const porte1 = this.children.find((child) =>
+            child.getComponent('debug_name').value == 'porte'
+        );
+        if(porte1.components.local_transform !== undefined){
+            this.initialTransformChildren.push(porte1.getGlobalTransform());
+        }        
+    }
+
+}
+
+
+
 
 export class Player {
     //La classe contient l'avancée globale du joueur, par exemple si on veut ouvrir une porte d'une salle, 
@@ -75,4 +129,30 @@ export class Player {
         this.save[index] = true;
     }
 
+}
+
+export class Keypad {
+    constuctor(entity, numbers, goodCode) {
+        this.entity = entity;
+        this.code = [];
+        this.setCode(numbers);
+        this.goodCode;
+    }
+
+    setCode(numbers){
+        for(let i = 0; i < numbers; i++){
+            this.code.push(0);
+        }
+    }
+
+    changeCode(index, value){
+        this.code[index] = value;
+    }
+
+    verifCode(){
+        if(this.code == this.goodCode){
+            return true;
+        }
+        return false;
+    }
 }
