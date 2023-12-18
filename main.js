@@ -18,6 +18,7 @@ import {
   Player,
   DoubleDoor,
   Door,
+  Keypad,
 } from "./class.js";
 
 //------------------------------------------------------------------------------
@@ -57,13 +58,17 @@ async function InitApp() {
   tabEntity.set(CdoubleDoorHall, new DoubleDoor(doubleDoorHall,openDoubleDoor,'self',isElevator));
   // tabEntity.set(keypadShakerGame,new Entity(keypadShaker_Game,closeKeypadShaker,player));
   // tabEntity.set(keypadShaker,new Entity(keypadShakerHall,openKeypadShaker,keypadShaker_Game));
+
+  
   tabEntity.set(CkeypadElevator,new Entity(keypadElevator,openKeypad,keypadElevator_Game));
-  tabEntity.set(CkeypadElevatorGame,new Entity(keypadElevator_Game,setPlayerCamera,player.entity));
+  tabEntity.set(CkeypadElevatorGame,new Entity(new Keypad(keypadElevator_Game,3,[2,3,4],null),setPlayerCamera,player.entity));
+  
   
   SetCollideEntities();
 
   window.addEventListener('keydown',inputManager);
   window.addEventListener('keyup',resetKey);
+
 
 //   document.addEventListener('mousedown', (event) => {
 //     setFPSCameraController(document.getElementById("display-canvas"));
@@ -186,11 +191,16 @@ async function inputManager(event) {
     keyIsDown = true;
   };
   if(event.key == 'l') {
-    await rotateNumber(-1, await getNumber(tabEntity.get(CkeypadElevatorGame),1));
+    await tabEntity.get(CkeypadElevatorGame).entity.rotateNumber(-1,1);
     keyIsDown = true;
   };
   if(event.key == 'k') {
-    await rotateNumber(1, await getNumber(tabEntity.get(CkeypadElevatorGame),1));
+    console.log(tabEntity.get(CkeypadElevatorGame).entity);
+    //await tabEntity.get(CkeypadElevatorGame).entity.rotateNumber(1,1);
+    keyIsDown = true;
+  };
+  if(event.key == 'p') {
+    tabEntity.get(CkeypadElevator).entity.verifCode();
     keyIsDown = true;
   };
 }
@@ -308,27 +318,7 @@ async function openKeypad(entity){
 
 }
 
-async function getNumber(entité, index){
 
-  const childrenScene  = await entité.entity.getChildren();
-  const roue = childrenScene.find((child) =>
-    child.getComponent('debug_name').value == ('number '+index)
-  );
-  
-  return roue;
-}
-
-async function rotateNumber(number, slot){
-  //Number est entre 1 et -1 pour le sens de rotate
-  const children = await slot.getChildren();
-  const wheel = children.find((child) =>
-    child.getComponent('debug_name').value == 'slot'
-  );
-  const transform = wheel.getGlobalTransform();
-  const radTransform = degToRad(Math.round(transform.eulerOrientation[0]) + (36 * number));
-  transform.orientation = [Math.sin((radTransform/2)),0,0,Math.cos((radTransform/2))];
-  wheel.setGlobalTransform(transform);
-}
 
 //------------------Fonction conditionnelles--------------
 
