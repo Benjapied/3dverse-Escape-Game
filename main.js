@@ -95,15 +95,18 @@ async function InitApp() {
 
   window.addEventListener('keydown',inputManager);
   window.addEventListener('keyup',resetKey);
+  window.addEventListener('click',onClick);
+  window.addEventListener('unclicked',resetClick);
 
   console.log(tabEntity.get(CkeypadElevatorGame));
-
+  
 
 //   document.addEventListener('mousedown', (event) => {
 //     setFPSCameraController(document.getElementById("display-canvas"));
 // });
-
 }
+export { tabEntity };
+
 
 //------------------------------------------------------------------------------
 async function InitFirstPersonController(charCtlSceneUUID) {
@@ -200,10 +203,16 @@ async function setPlayerCamera(controller) {
 //--------------------Fonctions----------------------
 
 let keyIsDown  = false;
+let clicked = false;
 
 function resetKey(){
   keyIsDown = false;
 }
+
+function resetClick(){
+  clicked =false;
+}
+
 
 async function inputManager(event) {
   if(keyIsDown){return;};
@@ -232,6 +241,35 @@ async function inputManager(event) {
     keyIsDown = true;
   };
 }
+
+async function onClick(event) {
+  if(clicked){return;};
+  const target = await SDK3DVerse.engineAPI.castScreenSpaceRay(
+    event.clientX,
+    event.clientY
+  );
+  if (!target.pickedPosition) return;
+  const clickedEntity = target.entity;
+  console.log(clickedEntity);
+  parent = await clickedEntity.getAncestors()[0];
+  children = await parent.getChildren();
+  slot = await children.find((child) =>
+    child.getComponent('debug_name').value == 'slot'
+  );
+  const temp = parent.getComponent('debug_name').value;
+  if(temp == 'number 1'){
+    if(clickedEntity.getComponent('debug_name').value == 'arrow up'){
+      await tabEntity.get(CkeypadElevatorGame).rotateNumber(1,1);
+      console.log("papagnan")
+  }
+    else if (clickedEntity.getComponent('debug_name').value == 'arrow down'){
+      await tabEntity.get(CkeypadElevatorGame).rotateNumber(-1,1);
+    }
+  }
+};
+
+export {onClick};
+
 
 function SetCollideEntities(){
   SDK3DVerse.engineAPI.onEnterTrigger((emitterEntity, triggerEntity) =>

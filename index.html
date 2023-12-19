@@ -17,21 +17,8 @@
         id="display-canvas"
         tabindex="1"
         oncontextmenu="event.preventDefault()"
-        onclick="onClick(event)"
       ></canvas>
     </div>
-    <script>
-      async function onClick(event) {
-        const target = await SDK3DVerse.engineAPI.castScreenSpaceRay(
-          event.clientX,
-          event.clientY
-        );
-        if (!target.pickedPosition) return;
-        const clickedEntity = target.entity;
-        console.log(clickedEntity);
-      };
-    </script>
-
     <!-- Class module -->>
     <script src="./class.js" type="module"></script>
 
@@ -40,5 +27,6 @@
 
     <!-- APP ENTRYPOINT -->
     <script src="./main.js" type="module"></script>
+    
   </body>
 </html>
