@@ -11,6 +11,10 @@ export class Entity {
         this.func = func;
         this.param = param;
         this.condition = this.setCondition(condition); //Ajoute une condition bool pour lancer la fonction, est true par défaut mais peut etre une fonction tiers
+        this.label = undefined;
+
+        this.setLabel();
+        this.setLabelVisibility(false);
 
         if(param == "self"){ this.param = this;}//si on met le string 'self' en param, on set le parametre à this
     }
@@ -29,6 +33,20 @@ export class Entity {
         }else{
             return condition;
         }
+    }
+
+    async setLabel(){
+        const children = await this.entity.getChildren();
+        const label = children.find((child) =>
+            child.getComponent('debug_name').value == 'label'
+        );
+        this.label = label;
+    }
+
+    async setLabelVisibility(bool){
+        if(this.label == null){return;}
+        await this.label.setVisibility(bool);
+        console.log('label : ' + this.label);
     }
 
 }

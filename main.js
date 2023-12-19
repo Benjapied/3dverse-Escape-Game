@@ -3,7 +3,6 @@ import {
   publicToken,
   mainSceneUUID,
   characterControllerSceneUUID,
-  switch1,
   door1,
   CdoubleDoorElevator,
   CdoubleDoorHall,
@@ -38,6 +37,7 @@ const tabEntity = new Map();
 let player;
 
 async function InitApp() {
+
   await SDK3DVerse.joinOrStartSession({
     userToken: publicToken,
     sceneUUID: mainSceneUUID,
@@ -48,10 +48,12 @@ async function InitApp() {
 
   await InitFirstPersonController(characterControllerSceneUUID);
 
+  await SDK3DVerse.installExtension(SDK3DVerse_ViewportDomOverlay_Ext);
+  await SDK3DVerse.installExtension(SDK3DVerse_LabelDisplay_Ext);
+
   requestAnimationFrame(gameLoop);
 
   player = new Player((await SDK3DVerse.engineAPI.findEntitiesByNames('Player'))[0]);
-  const entity = (await SDK3DVerse.engineAPI.findEntitiesByEUID(switch1))[0];
   const door = (await SDK3DVerse.engineAPI.findEntitiesByEUID(door1))[0];
   const doubleDoorElevator = (await SDK3DVerse.engineAPI.findEntitiesByEUID(CdoubleDoorElevator))[0];
   const doubleDoorHall = (await SDK3DVerse.engineAPI.findEntitiesByEUID(CdoubleDoorHall))[0];
@@ -68,7 +70,6 @@ async function InitApp() {
   const rct3 = (await SDK3DVerse.engineAPI.findEntitiesByEUID(Crct3))[0];
   const rct3Zoom = (await SDK3DVerse.engineAPI.findEntitiesByEUID(Crct3Zoom))[0];
 
-  tabEntity.set(switch1, new Entity(entity,printOue));
   tabEntity.set(door1, new Door(door,openDoor,'self'));
   tabEntity.set(CdoubleDoorElevator, new DoubleDoor(doubleDoorElevator,openDoubleDoor,'self',isElevator));
   tabEntity.set(CdoubleDoorHall, new DoubleDoor(doubleDoorHall,openDoubleDoor,'self',isElevator));
@@ -276,12 +277,14 @@ function SetCollideEntities(){
     {
       if(tabEntity.get(String(triggerEntity.linker.components.euid.value)) !== undefined){
         tabEntity.get(String(triggerEntity.linker.components.euid.value)).isTrigger = true;
+        tabEntity.get(String(triggerEntity.linker.components.euid.value)).setLabelVisibility(true);
       }
     });
   SDK3DVerse.engineAPI.onExitTrigger((emitterEntity, triggerEntity) =>
     {
       if(tabEntity.get(String(triggerEntity.linker.components.euid.value)) !== undefined){
         tabEntity.get(String(triggerEntity.linker.components.euid.value)).isTrigger = false;
+        tabEntity.get(String(triggerEntity.linker.components.euid.value)).setLabelVisibility(false);
       }
     });
 }
@@ -306,8 +309,9 @@ async function openDoor(param){
   //On recupere l'element enfant correspondant a la porte
   const child = enfants.find((child) =>
     child.isAttached("mesh_ref")
-  );
-
+  ); 
+  
+  // window.SDK3DVerse.extensions.LabelDisplay.labelEntities[i].labelElement.innerText = 'Benjaamin';
 
   const transform1 = child.getGlobalTransform();
 
