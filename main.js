@@ -251,22 +251,36 @@ async function onClick(event) {
   );
   if (!target.pickedPosition) return;
   const clickedEntity = target.entity;
-  console.log(clickedEntity);
   parent = await clickedEntity.getAncestors()[0];
-  children = await parent.getChildren();
-  slot = await children.find((child) =>
-    child.getComponent('debug_name').value == 'slot'
-  );
+  const children = await parent.getChildren();
   const temp = parent.getComponent('debug_name').value;
   if(temp == 'number 1'){
     if(clickedEntity.getComponent('debug_name').value == 'arrow up'){
-      await tabEntity.get(CkeypadElevatorGame).rotateNumber(1,1);
-      console.log("papagnan")
+      await tabEntity.get(CkeypadElevatorGame).rotateNumber(-1,1);
   }
     else if (clickedEntity.getComponent('debug_name').value == 'arrow down'){
-      await tabEntity.get(CkeypadElevatorGame).rotateNumber(-1,1);
+      await tabEntity.get(CkeypadElevatorGame).rotateNumber(1,1);
     }
   }
+  else if(temp == 'number 2'){
+    if(clickedEntity.getComponent('debug_name').value == 'arrow up'){
+      await tabEntity.get(CkeypadElevatorGame).rotateNumber(-1,2);
+  }
+    else if (clickedEntity.getComponent('debug_name').value == 'arrow down'){
+      await tabEntity.get(CkeypadElevatorGame).rotateNumber(1,2);
+    }
+  }
+  else if(temp == 'number 3'){
+    if(clickedEntity.getComponent('debug_name').value == 'arrow up'){
+      await tabEntity.get(CkeypadElevatorGame).rotateNumber(-1,3);
+  }
+    else if (clickedEntity.getComponent('debug_name').value == 'arrow down'){
+      await tabEntity.get(CkeypadElevatorGame).rotateNumber(1,3);
+    }
+  }
+    else if (temp == 'button'){
+      tabEntity.get(CkeypadElevatorGame).verifCode();
+    }
 };
 
 export {onClick};
