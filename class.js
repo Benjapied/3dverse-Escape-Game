@@ -41,6 +41,7 @@ export class Entity {
             child.getComponent('debug_name').value == 'label'
         );
         this.label = label;
+        
     }
 
     async setLabelVisibility(bool){
@@ -163,6 +164,9 @@ export class Keypad extends Entity {
         this.setCode(numbers);
         this.goodCode = goodCode;
         this.goodFunc = goodFunc;
+
+        this.resetNumber();
+
     }
 
     setCode(numbers){
@@ -192,6 +196,20 @@ export class Keypad extends Entity {
         );
         
         return roue;
+    }
+
+    async resetNumber(){
+        for(let i = 0; i < this.number; i++) {
+            const slot = await this.getNumber(i);
+            //Number est entre 1 et -1 pour le sens de rotate
+            const children = await slot.getChildren();
+            const wheel = children.find((child) =>
+                child.getComponent('debug_name').value == 'slot'
+            );
+            const transform = wheel.getGlobalTransform();
+            transform.orientation = [Math.sin(0),0,0,Math.cos(0)];
+            wheel.setGlobalTransform(transform);
+        }
     }
         
     async rotateNumber(number, index){

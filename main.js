@@ -53,7 +53,6 @@ async function InitApp() {
 
   requestAnimationFrame(gameLoop);
 
-  player = new Player((await SDK3DVerse.engineAPI.findEntitiesByNames('Player'))[0]);
   const door = (await SDK3DVerse.engineAPI.findEntitiesByEUID(door1))[0];
   const doubleDoorElevator = (await SDK3DVerse.engineAPI.findEntitiesByEUID(CdoubleDoorElevator))[0];
   const doubleDoorHall = (await SDK3DVerse.engineAPI.findEntitiesByEUID(CdoubleDoorHall))[0];
@@ -135,6 +134,8 @@ async function InitFirstPersonController(charCtlSceneUUID) {
   );
 
   await setPlayerCamera(playerSceneEntity);
+
+  player = new Player(playerSceneEntity);
 
 }
 
@@ -287,15 +288,19 @@ export {onClick};
 
 
 function SetCollideEntities(){
-  SDK3DVerse.engineAPI.onEnterTrigger((emitterEntity, triggerEntity) =>
+  SDK3DVerse.engineAPI.onEnterTrigger(async(emitterEntity, triggerEntity) =>
     {
+      const parent = await emitterEntity.getAncestors()[0];
+      if(parent.components.euid.value != player.entity.components.euid.value){return;}
       if(tabEntity.get(String(triggerEntity.linker.components.euid.value)) !== undefined){
         tabEntity.get(String(triggerEntity.linker.components.euid.value)).isTrigger = true;
         tabEntity.get(String(triggerEntity.linker.components.euid.value)).setLabelVisibility(true);
       }
     });
-  SDK3DVerse.engineAPI.onExitTrigger((emitterEntity, triggerEntity) =>
+  SDK3DVerse.engineAPI.onExitTrigger(async(emitterEntity, triggerEntity) =>
     {
+      const parent = await emitterEntity.getAncestors()[0];
+      if(parent.components.euid.value != player.entity.components.euid.value){return;}
       if(tabEntity.get(String(triggerEntity.linker.components.euid.value)) !== undefined){
         tabEntity.get(String(triggerEntity.linker.components.euid.value)).isTrigger = false;
         tabEntity.get(String(triggerEntity.linker.components.euid.value)).setLabelVisibility(false);
