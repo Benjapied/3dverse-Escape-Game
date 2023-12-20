@@ -6,6 +6,7 @@ import {
   CdoorRomero,
   CdoubleDoorElevator,
   CdoubleDoorHall,
+  CdoubleDoorShaker,
   keypadShaker,
   keypadShakerGame,
   CkeypadElevator,
@@ -34,7 +35,17 @@ window.addEventListener("load", InitApp);
 //------------------------------------------------------------------------------
 
 const tabEntity = new Map();
+const dicoKeypad = new Map();
 let player;
+
+async function initDicoKeypad(){
+  dicoKeypad.set('arrow up', -1);
+  dicoKeypad.set('arrow down', 1);
+  dicoKeypad.set('number 1', 1);
+  dicoKeypad.set('number 2', 2);
+  dicoKeypad.set('number 3', 3);
+  dicoKeypad.set('number 4', 4);
+}
 
 async function InitApp() {
 
@@ -56,6 +67,7 @@ async function InitApp() {
   const door = (await SDK3DVerse.engineAPI.findEntitiesByEUID(CdoorRomero))[0];
   const doubleDoorElevator = (await SDK3DVerse.engineAPI.findEntitiesByEUID(CdoubleDoorElevator))[0];
   const doubleDoorHall = (await SDK3DVerse.engineAPI.findEntitiesByEUID(CdoubleDoorHall))[0];
+  const doubleDoorShaker = (await SDK3DVerse.engineAPI.findEntitiesByEUID(CdoubleDoorShaker))[0];
   const keypadShakerHall = (await SDK3DVerse.engineAPI.findEntitiesByEUID(keypadShaker))[0];
   const keypadShaker_Game = (await SDK3DVerse.engineAPI.findEntitiesByEUID(keypadShakerGame))[0];
   const keypadElevator = (await SDK3DVerse.engineAPI.findEntitiesByEUID(CkeypadElevator))[0];
@@ -72,6 +84,7 @@ async function InitApp() {
   tabEntity.set(CdoorRomero, new Door(door,openDoor,'self'));
   tabEntity.set(CdoubleDoorElevator, new DoubleDoor(doubleDoorElevator,openDoubleDoor,'self',isElevator));
   tabEntity.set(CdoubleDoorHall, new DoubleDoor(doubleDoorHall,openDoubleDoor,'self',isElevator));
+  tabEntity.set(CdoubleDoorShaker, new DoubleDoor(doubleDoorShaker,openDoubleDoor,'self',isShaker));
   tabEntity.set(keypadShakerGame,new Entity(keypadShaker_Game,setPlayerCamera,'self'));
   tabEntity.set(keypadShaker,new Entity(keypadShakerHall,openKeypad,keypadShaker_Game));
   tabEntity.set(CkeypadElevator,new Entity(keypadElevator,openKeypad,keypadElevator_Game));
@@ -86,17 +99,22 @@ async function InitApp() {
   tabEntity.set(Crct3,new Entity(rct3,openKeypad,rct3Zoom));
   tabEntity.set(Crct3Zoom,new Entity(rct3Zoom,setPlayerCamera,player.entity));
 
+
   
   tabEntity.set(CkeypadElevator,new Entity(keypadElevator,openKeypad,keypadElevator_Game));
   tabEntity.set(CkeypadElevatorGame,new Keypad(keypadElevator_Game,setPlayerCamera,3,[2,0,0],() => {player.save["elevator"] = true;},player.entity));
+  tabEntity.set(keypadShaker,new Entity(keypadShakerHall,openKeypad,keypadShaker_Game));
+  tabEntity.set(keypadShakerGame,new Keypad(keypadShaker_Game,setPlayerCamera,4,[5,4,7,2],() => {player.save["shaker"] = true;},player.entity));
   
-  
+  initDicoKeypad();
   SetCollideEntities();
 
   window.addEventListener('keydown',inputManager);
   window.addEventListener('keyup',resetKey);
   window.addEventListener('click',onClick);
   window.addEventListener('unclicked',resetClick);
+  window.addEventListener('click', changeNumber);
+  window.addEventListener('click',confirmKeypad);
 
   console.log(tabEntity.get(CkeypadElevatorGame));
   
@@ -105,7 +123,6 @@ async function InitApp() {
     setFPSCameraController(document.getElementById("display-canvas"));
 });
 }
-export { tabEntity };
 
 
 //------------------------------------------------------------------------------
@@ -252,39 +269,43 @@ async function onClick(event) {
   );
   if (!target.pickedPosition) return;
   const clickedEntity = target.entity;
-  parent = await clickedEntity.getAncestors()[0];
-  const children = await parent.getChildren();
-  const temp = parent.getComponent('debug_name').value;
-  if(temp == 'number 1'){
-    if(clickedEntity.getComponent('debug_name').value == 'arrow up'){
-      await tabEntity.get(CkeypadElevatorGame).rotateNumber(-1,1);
-  }
-    else if (clickedEntity.getComponent('debug_name').value == 'arrow down'){
-      await tabEntity.get(CkeypadElevatorGame).rotateNumber(1,1);
-    }
-  }
-  else if(temp == 'number 2'){
-    if(clickedEntity.getComponent('debug_name').value == 'arrow up'){
-      await tabEntity.get(CkeypadElevatorGame).rotateNumber(-1,2);
-  }
-    else if (clickedEntity.getComponent('debug_name').value == 'arrow down'){
-      await tabEntity.get(CkeypadElevatorGame).rotateNumber(1,2);
-    }
-  }
-  else if(temp == 'number 3'){
-    if(clickedEntity.getComponent('debug_name').value == 'arrow up'){
-      await tabEntity.get(CkeypadElevatorGame).rotateNumber(-1,3);
-  }
-    else if (clickedEntity.getComponent('debug_name').value == 'arrow down'){
-      await tabEntity.get(CkeypadElevatorGame).rotateNumber(1,3);
-    }
-  }
-    else if (temp == 'button'){
-      tabEntity.get(CkeypadElevatorGame).verifCode();
-    }
+  return clickedEntity;
 };
 
-export {onClick};
+async function getKeypad(event) {
+  const target = await onClick(event);
+  if (!target) return;
+  const keypad = await target.getAncestors()[1];
+  if (keypad.getComponent('debug_name').value == 'Keypad') {
+    return keypadShakerGame;
+  } else if (keypad.getComponent('debug_name').value == 'panel elevator big') {
+    return CkeypadElevatorGame;
+  }
+}
+
+async function changeNumber(event){
+  const targetPromise = onClick(event);
+  const target = await targetPromise;
+  if (!target) return;
+  const targetResolved = await target;
+  const ancestors = await targetResolved.getAncestors();
+  const parent = ancestors[0];
+  const keypad = await getKeypad(event);
+
+  if (!keypad) return;
+  await tabEntity.get(keypad).rotateNumber(dicoKeypad.get(target.getComponent('debug_name').value),dicoKeypad.get(parent.getComponent('debug_name').value));
+}
+
+async function confirmKeypad(event){
+  const targetPromise = onClick(event);
+  const target = await targetPromise;
+  if (!target) return;
+  const keypad = await getKeypad(event);
+  if (!keypad) return;
+  if(target.getComponent('debug_name').value == 'button'){
+    tabEntity.get(keypad).verifCode();
+  }
+}
 
 
 function SetCollideEntities(){
