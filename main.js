@@ -3,7 +3,7 @@ import {
   publicToken,
   mainSceneUUID,
   characterControllerSceneUUID,
-  door1,
+  CdoorRomero,
   CdoubleDoorElevator,
   CdoubleDoorHall,
   keypadShaker,
@@ -53,7 +53,7 @@ async function InitApp() {
 
   requestAnimationFrame(gameLoop);
 
-  const door = (await SDK3DVerse.engineAPI.findEntitiesByEUID(door1))[0];
+  const door = (await SDK3DVerse.engineAPI.findEntitiesByEUID(CdoorRomero))[0];
   const doubleDoorElevator = (await SDK3DVerse.engineAPI.findEntitiesByEUID(CdoubleDoorElevator))[0];
   const doubleDoorHall = (await SDK3DVerse.engineAPI.findEntitiesByEUID(CdoubleDoorHall))[0];
   const keypadShakerHall = (await SDK3DVerse.engineAPI.findEntitiesByEUID(keypadShaker))[0];
@@ -69,7 +69,7 @@ async function InitApp() {
   const rct3 = (await SDK3DVerse.engineAPI.findEntitiesByEUID(Crct3))[0];
   const rct3Zoom = (await SDK3DVerse.engineAPI.findEntitiesByEUID(Crct3Zoom))[0];
 
-  tabEntity.set(door1, new Door(door,openDoor,'self'));
+  tabEntity.set(CdoorRomero, new Door(door,openDoor,'self'));
   tabEntity.set(CdoubleDoorElevator, new DoubleDoor(doubleDoorElevator,openDoubleDoor,'self',isElevator));
   tabEntity.set(CdoubleDoorHall, new DoubleDoor(doubleDoorHall,openDoubleDoor,'self',isElevator));
   tabEntity.set(keypadShakerGame,new Entity(keypadShaker_Game,setPlayerCamera,'self'));
@@ -101,9 +101,9 @@ async function InitApp() {
   console.log(tabEntity.get(CkeypadElevatorGame));
   
 
-//   document.addEventListener('mousedown', (event) => {
-//     setFPSCameraController(document.getElementById("display-canvas"));
-// });
+  document.addEventListener('mousedown', (event) => {
+    setFPSCameraController(document.getElementById("display-canvas"));
+});
 }
 export { tabEntity };
 

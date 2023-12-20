@@ -25,7 +25,7 @@ export class Entity {
 
     getFunction() {return this.func;}
 
-    triggerFunction() {if(this.condition()){return this.func(this.param);}else{console.log("vous ne pouvez pas faire ça")} }
+    triggerFunction() {if(this.condition()){return this.func(this.param);}else{alert("vous ne pouvez pas faire ça")} }
     
     setCondition(condition){
         if (condition == true){
@@ -41,6 +41,9 @@ export class Entity {
             child.getComponent('debug_name').value == 'label'
         );
         this.label = label;
+        if(this.label !== undefined){
+            await this.label.setVisibility(false);
+        };
         
     }
 
