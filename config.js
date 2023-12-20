@@ -5,9 +5,10 @@ export const characterControllerSceneUUID = "16c91da5-e41d-4635-ba0c-a6e75168c7e
 export const door1 = "381b7a5c-8cb9-4cda-8838-806428ee868b";
 export const CdoubleDoorElevator = "cf9971fd-e0d4-4168-a5cf-6e6b3ae5826b";
 export const CdoubleDoorHall = "79e8c9e6-f125-4ff7-b240-0fad10e9fce2";
+export const CdoubleDoorShaker = "e3bb6319-d11a-4e3c-bf9a-3531287bbd79";
 
 export const keypadShaker = "7f164c5a-16de-40ed-8080-b996714368be";
-export const keypadShakerGame = "9c05c39b-a099-4b2b-8d76-373ef71db428";
+export const keypadShakerGame = "66044ff8-2f2f-4f44-acdb-4b34d798b832";
 
 export const CkeypadElevator = "a9153ead-9685-4005-883c-8e840d70194d";
 export const CkeypadElevatorGame = "66fe005f-e428-4a60-ac14-957fbda480d3";
