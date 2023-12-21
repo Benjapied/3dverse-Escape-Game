@@ -53,7 +53,7 @@ async function initDicoKeypad(){
 
 async function InitApp() {
 
-  await SDK3DVerse.joinOrStartSession({
+  await SDK3DVerse.startSession({
     userToken: publicToken,
     sceneUUID: mainSceneUUID,
     canvas: document.getElementById("display-canvas"),
@@ -114,9 +114,9 @@ async function InitApp() {
 
   
   tabEntity.set(CkeypadElevator,new Entity(keypadElevator,openKeypad,keypadElevator_Game));
-  tabEntity.set(CkeypadElevatorGame,new Keypad(keypadElevator_Game,setPlayerCamera,3,[2,0,0],() => {player.save["elevator"] = true;},player.entity));
+  tabEntity.set(CkeypadElevatorGame,new Keypad(keypadElevator_Game,setPlayerCamera,3,[2,3,2],updateElevator,player.entity));
   tabEntity.set(keypadShaker,new Entity(keypadShakerHall,openKeypad,keypadShaker_Game));
-  tabEntity.set(keypadShakerGame,new Keypad(keypadShaker_Game,setPlayerCamera,4,[5,4,7,2],() => {player.save["shaker"] = true;},player.entity));
+  tabEntity.set(keypadShakerGame,new Keypad(keypadShaker_Game,setPlayerCamera,4,[5,4,7,2],updateShaker,player.entity));
   
   initDicoKeypad();
   SetCollideEntities();
@@ -131,9 +131,9 @@ async function InitApp() {
   console.log(tabEntity.get(CkeypadElevatorGame));
   
 
-  document.addEventListener('mousedown', (event) => {
-    setFPSCameraController(document.getElementById("display-canvas"));
-});
+//   document.addEventListener('mousedown', (event) => {
+//     setFPSCameraController(document.getElementById("display-canvas"));
+// });
 }
 
 
@@ -257,18 +257,6 @@ async function inputManager(event) {
   };
   if(event.key == 'Escape'){
     setPlayerCamera(player.entity);
-    keyIsDown = true;
-  };
-  if(event.key == 'l') {
-    await tabEntity.get(CkeypadElevatorGame).rotateNumber(-1,1);
-    keyIsDown = true;
-  };
-  if(event.key == 'k') {
-    await tabEntity.get(CkeypadElevatorGame).rotateNumber(1,1);
-    keyIsDown = true;
-  };
-  if(event.key == 'p') {
-    tabEntity.get(CkeypadElevatorGame).verifCode();
     keyIsDown = true;
   };
 }
@@ -448,8 +436,20 @@ function isElevator(){
   return player.save['elevator'];
 }
 
+function updateElevator(){
+  player.save["elevator"] = true;
+  setPlayerCamera(player.entity);
+  openDoubleDoor(tabEntity.get(CdoubleDoorElevator));
+}
+
 function isShaker(){
   return player.save['shaker'];
+}
+
+function updateShaker(){
+  player.save["shaker"] = true;
+  setPlayerCamera(player.entity);
+  openDoubleDoor(tabEntity.get(CdoubleDoorShaker));
 }
 
 function isRomero(){
