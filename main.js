@@ -7,6 +7,10 @@ import {
   CdoubleDoorElevator,
   CdoubleDoorHall,
   CdoubleDoorShaker,
+  CdoorCarmack,
+  CdoorMario,
+  CdoorSteeveJobs,
+  CdoorHedyLamarr,
   keypadShaker,
   keypadShakerGame,
   CkeypadElevator,
@@ -68,6 +72,10 @@ async function InitApp() {
   const doubleDoorElevator = (await SDK3DVerse.engineAPI.findEntitiesByEUID(CdoubleDoorElevator))[0];
   const doubleDoorHall = (await SDK3DVerse.engineAPI.findEntitiesByEUID(CdoubleDoorHall))[0];
   const doubleDoorShaker = (await SDK3DVerse.engineAPI.findEntitiesByEUID(CdoubleDoorShaker))[0];
+  const doorCarmack = (await SDK3DVerse.engineAPI.findEntitiesByEUID(CdoorCarmack))[0];
+  const doorMario = (await SDK3DVerse.engineAPI.findEntitiesByEUID(CdoorMario))[0];
+  const doorSteveJobs = (await SDK3DVerse.engineAPI.findEntitiesByEUID(CdoorSteeveJobs))[0];
+  const doorHedyLamarr = (await SDK3DVerse.engineAPI.findEntitiesByEUID(CdoorHedyLamarr))[0];
   const keypadShakerHall = (await SDK3DVerse.engineAPI.findEntitiesByEUID(keypadShaker))[0];
   const keypadShaker_Game = (await SDK3DVerse.engineAPI.findEntitiesByEUID(keypadShakerGame))[0];
   const keypadElevator = (await SDK3DVerse.engineAPI.findEntitiesByEUID(CkeypadElevator))[0];
@@ -82,6 +90,10 @@ async function InitApp() {
   const rct3Zoom = (await SDK3DVerse.engineAPI.findEntitiesByEUID(Crct3Zoom))[0];
 
   tabEntity.set(CdoorRomero, new Door(door,openDoor,'self'));
+  tabEntity.set(CdoorCarmack,new Door(doorCarmack,openDoor,'self'));
+  tabEntity.set(CdoorMario,new Door(doorMario,openDoor,'self'));
+  tabEntity.set(CdoorSteeveJobs,new Door(doorSteveJobs,openDoor,'self'));
+  tabEntity.set(CdoorHedyLamarr,new Door(doorHedyLamarr,openDoor,'self'));
   tabEntity.set(CdoubleDoorElevator, new DoubleDoor(doubleDoorElevator,openDoubleDoor,'self',isElevator));
   tabEntity.set(CdoubleDoorHall, new DoubleDoor(doubleDoorHall,openDoubleDoor,'self',isElevator));
   tabEntity.set(CdoubleDoorShaker, new DoubleDoor(doubleDoorShaker,openDoubleDoor,'self',isShaker));
