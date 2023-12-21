@@ -129,7 +129,6 @@ async function InitApp() {
   window.addEventListener('click',confirmKeypad);
 
   console.log(tabEntity.get(CkeypadElevatorGame));
-  
 
 //   document.addEventListener('mousedown', (event) => {
 //     setFPSCameraController(document.getElementById("display-canvas"));
@@ -227,7 +226,6 @@ async function setPlayerCamera(controller) {
 
   // Finally set the first person camera as the main camera.
   SDK3DVerse.setMainCamera(firstPersonCamera);
-
   
 };
 
@@ -335,10 +333,6 @@ export function degToRad(angle) {
   return angle*Math.PI/180;
 }
 
-function printOue(){
-  console.log("oue")
-}
-
 async function openDoor(param){
 
   const entity = param.entity;
@@ -422,7 +416,17 @@ async function openKeypad(entity){
     child.isAttached("camera")
   );
 
+  SDK3DVerse.engineAPI.detachClientFromScripts(player.entity);
+
+  SDK3DVerse.updateControllerSetting({
+    speed: 0, // speed in meters per second
+    sensitivity: 0, // "rotation speed"
+  });
+  
   SDK3DVerse.setMainCamera(gameCam);
+  
+  SDK3DVerse.engineAPI.cameraAPI.setControllerType(SDK3DVerse.cameraControllerType.none);
+
 
   player.isTrigger = false;
 
