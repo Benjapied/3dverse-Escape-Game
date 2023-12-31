@@ -417,11 +417,6 @@ async function openKeypad(entity){
   );
 
   SDK3DVerse.engineAPI.detachClientFromScripts(player.entity);
-
-  SDK3DVerse.updateControllerSetting({
-    speed: 0, // speed in meters per second
-    sensitivity: 0, // "rotation speed"
-  });
   
   SDK3DVerse.setMainCamera(gameCam);
   
