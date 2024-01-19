@@ -2,18 +2,21 @@ export const publicToken = "public_VooD9rXrjcy5Pd1u";
 export const mainSceneUUID = "cd6d507c-e3b7-4587-8f0a-f22d0606644c";
 export const characterControllerSceneUUID = "77a96faf-f20e-479b-9906-4a8be50ccbcd";
 
+//Toutes les portes de toutes les salles
 export const CdoorRomero = "381b7a5c-8cb9-4cda-8838-806428ee868b";
-export const CdoubleDoorElevator = "cf9971fd-e0d4-4168-a5cf-6e6b3ae5826b";
-export const CdoubleDoorHall = "79e8c9e6-f125-4ff7-b240-0fad10e9fce2";
-export const CdoubleDoorShaker = "e3bb6319-d11a-4e3c-bf9a-3531287bbd79";
 export const CdoorCarmack = "84bdda6d-1e39-4d46-91d5-decd7045ed02";
 export const CdoorMario = "c2acd592-1556-4489-b1e7-2db1476dbc3a";
 export const CdoorSteeveJobs ="16c5dc07-f78b-4a96-90c6-da57982370b1";
 export const CdoorHedyLamarr ="cc396763-d2da-4e07-928a-07614df75c34";
 
+//Les doubles doors
+export const CdoubleDoorElevator = "cf9971fd-e0d4-4168-a5cf-6e6b3ae5826b";
+export const CdoubleDoorHall = "79e8c9e6-f125-4ff7-b240-0fad10e9fce2";
+export const CdoubleDoorShaker = "e3bb6319-d11a-4e3c-bf9a-3531287bbd79";
+
+//Les keypads
 export const keypadShaker = "7f164c5a-16de-40ed-8080-b996714368be";
 export const keypadShakerGame = "66044ff8-2f2f-4f44-acdb-4b34d798b832";
-
 export const CkeypadElevator = "a9153ead-9685-4005-883c-8e840d70194d";
 export const CkeypadElevatorGame = "66fe005f-e428-4a60-ac14-957fbda480d3";
 
