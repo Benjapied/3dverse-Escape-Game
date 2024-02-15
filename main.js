@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------
 
-import {Entity,Door,DoubleDoor,Keypad,Player} from "./config/classConfig.js";
+import {Entity,Door,DoubleDoor,Keypad,Player,TextFrame, TextManager} from "./config/classConfig.js";
 import {setEntitiesInTab, initDicoKeypad} from "./config/entitiesConfig.js"
 import {
   publicToken,
@@ -21,6 +21,7 @@ window.addEventListener("load", InitApp);
 let dicoKeypad;
 export let player;
 export let tabEntity;
+let textManager;
 
 async function InitApp() {
   await SDK3DVerse.startSession({
@@ -39,6 +40,7 @@ async function InitApp() {
   requestAnimationFrame(gameLoop);
 
   tabEntity = await setEntitiesInTab();
+  TextManager.Init();
   
   dicoKeypad = initDicoKeypad();
   SetCollideEntities();
@@ -49,6 +51,9 @@ async function InitApp() {
   window.addEventListener('unclicked',resetClick);
   window.addEventListener('click', changeNumber);
   window.addEventListener('click',confirmKeypad);
+
+  window.addEventListener('click',TextManager.Get().disableText.bind(TextManager.Get()));
+
 
 //   document.addEventListener('mousedown', (event) => {
 //     setFPSCameraController(document.getElementById("display-canvas"));
@@ -115,6 +120,12 @@ async function inputManager(event) {
     setPlayerCamera(player.entity,player);
     keyIsDown = true;
   };
+  if(event.key == 'b'){
+    TextManager.Get().addText('zob','neuy');
+    keyIsDown = true;
+  };
+
+  
 }
 
 async function onClick(event) {

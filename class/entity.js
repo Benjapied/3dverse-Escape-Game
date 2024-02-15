@@ -1,4 +1,4 @@
-
+import { TextManager } from "./textFrame.js";
 //Classe Entité qui contient une entité et plusieurs parametres et méthode pour intérragir avec elle
 
 export class Entity {
@@ -25,7 +25,7 @@ export class Entity {
 
     triggerFunction() {
         if(this.condition()){
-            return this.func(this.param);}else{alert("vous ne pouvez pas faire ça")
+            return this.func(this.param);}else{TextManager.Get().addText(' ','Vous ne pouvez pas faire ça');
         } 
     }
     

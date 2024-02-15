@@ -8,5 +8,13 @@ import {Door} from "../class/door.js";
 import {DoubleDoor} from "../class/doubleDoor.js";
 import {Keypad} from "../class/keypad.js";
 import {Player} from "../class/player.js";
+import { TextFrame, TextManager} from "../class/textFrame.js"
 
-export {Entity,Door,DoubleDoor,Keypad,Player};
+export {
+    Entity,
+    Door,
+    DoubleDoor,
+    Keypad,Player,
+    TextFrame,
+    TextManager
+};
