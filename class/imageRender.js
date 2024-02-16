@@ -1,16 +1,14 @@
-
-export class TextFrame {
+export class ImageRender {
     //Class qui va afficher du text a l'écran
     //Dans le css la frame est définie par la class textFrame
-    constructor(speaker, content){
-        this.speaker = speaker;
-        this.content = content;
+    constructor(link){
+        this.link = link;
     }
 
-    printText(){
-        console.log("zob");
+    printImage(){
+        console.log("Image");
         document.getElementsByClassName("overlay")[0].style.display = 'inline';
-        document.getElementsByClassName("overlay")[0].innerHTML += '<div class="textFrame"><h2 class="speaker">' + this.speaker + '</h2> <div class="content">' + this.content + '</div></div>';
+        document.getElementsByClassName("overlay")[0].innerHTML += '<img class="image">' +  + '</div>';
     }
 }
 
