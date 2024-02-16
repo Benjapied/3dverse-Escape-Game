@@ -8,47 +8,35 @@ export class ImageRender {
     printImage(){
         console.log("Image");
         document.getElementsByClassName("overlay")[0].style.display = 'inline';
-        document.getElementsByClassName("overlay")[0].innerHTML += '<img class="image">' +  + '</div>';
+        document.getElementsByClassName("overlay")[0].innerHTML += '<img class="image" src="img/' + this.link + '"></div>';
     }
 }
 
-export class TextManager {
+export class ImageRender {
     static instance = null;
     constructor(){
         this.textArray = [];
     }
 
     static Init(){  
-        if(TextManager.instance == null){
-            TextManager.instance = new TextManager();
+        if(ImageRender.instance == null){
+            ImageRender.instance = new ImageRender();
         }
     }
 
     static Get(){
-        return TextManager.instance;
+        return ImageRender.instance;
     }
 
-    disableText(){
-        if((this.textArray).length == 0)return;
-        //Delete de l'objet
-        this.textArray.splice(0,1);
-
-        //Delete de la div html
-        let frame = document.getElementsByClassName("overlay")[0];
-        if(!frame)return;
-        frame.innerHTML = '';
-        frame.style.display = 'none';
+    addImge(link){
+        this.textArray.push(new TextFrame(link));
+        this.printImage();
     }
 
-    addText(speaker,content){
-        this.textArray.push(new TextFrame(speaker,content));
-        this.printText();
-    }
-
-    printText(){
+    printImge(){
         let frame = document.getElementsByClassName("overlay")[0];
         frame.innerHTML = '';
-        this.textArray[0].printText();
+        this.textArray[0].printImage();
     }
 
 }
